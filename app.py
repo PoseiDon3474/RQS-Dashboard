@@ -1,53 +1,62 @@
 import streamlit as st
 import pandas as pd
 
-# Sample data for POGG1 transactions
-sample_data = {
-    'Transaction ID': ['POGG1-001', 'POGG1-002', 'POGG1-003', 'POGG1-004'],
-    'Department': ['Health', 'Education', 'Transportation', 'Health'],
-    'Event Type': ['PR05', 'PR06', 'CG07', 'CG08'],
-    'Status': ['Pre-encumbrance', 'Encumbrance', 'Expenditure', 'Pre-encumbrance'],
-    'Budget Utilization (%)': [45, 70, 90, 30],
-    'Phase': ['Pre-encumbrance', 'Encumbrance', 'Expenditure', 'Pre-encumbrance'],
-    'Amount Encumbered': [10000, 20000, 15000, 5000],
-    'Amount Spent': [4500, 14000, 13500, 1500],
-    'Remaining Balance': [5500, 6000, 1500, 3500]
-}
+# --- Styling to match the original app ---
+st.markdown("""
+    <style>
+    .main {
+        background-color: #222629;
+    }
+    h1 {
+        color: #FFFFFF;
+        font-family: system-ui;
+        margin-left: 20px;
+    }
+    label, .stTextInput label {
+        color: #86C232;
+        font-family: system-ui;
+        font-size: 20px;
+        margin-left: 20px;
+        margin-top: 20px;
+    }
+    .stButton>button {
+        background-color: #86C232;
+        border-color: #86C232;
+        color: #FFFFFF;
+        font-family: system-ui;
+        font-size: 20px;
+        font-weight: bold;
+        margin-left: 30px;
+        margin-top: 20px;
+        width: 140px;
+    }
+    .stTextInput>div>input {
+        color: #222629;
+        font-family: system-ui;
+        font-size: 20px;
+        margin-left: 10px;
+        margin-top: 20px;
+        width: 100px;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
-df = pd.DataFrame(sample_data)
+st.markdown("<h1>TO THE POWER OF MATH!</h1>", unsafe_allow_html=True)
 
-st.title('POGG1 Progress Tracking Dashboard')
+# --- Input fields ---
+base = st.text_input("Base number:", key="base")
+exponent = st.text_input("...to the power of:", key="exponent")
 
-# Sidebar filters
-department_filter = st.sidebar.multiselect('Select Department', options=df['Department'].unique(), default=df['Department'].unique())
-event_type_filter = st.sidebar.multiselect('Select Event Type', options=df['Event Type'].unique(), default=df['Event Type'].unique())
-status_filter = st.sidebar.multiselect('Select Status', options=df['Status'].unique(), default=df['Status'].unique())
-
-# Data filtering
-filtered_df = df[
-    (df['Department'].isin(department_filter)) &
-    (df['Event Type'].isin(event_type_filter)) &
-    (df['Status'].isin(status_filter))
-]
-
-# Overview
-st.header('Overview')
-st.dataframe(filtered_df)
-
-# Budget Utilization
-st.header('Budget Utilization')
-st.bar_chart(filtered_df.set_index('Transaction ID')['Budget Utilization (%)'])
-
-# Phase Tracking
-st.header('Phase Tracking')
-phase_counts = filtered_df['Phase'].value_counts()
-st.bar_chart(phase_counts)
-
-# Financial Summary
-st.header('Financial Summary')
-st.write('Total Amount Encumbered:', filtered_df['Amount Encumbered'].sum())
-st.write('Total Amount Spent:', filtered_df['Amount Spent'].sum())
-st.write('Total Remaining Balance:', filtered_df['Remaining Balance'].sum())
-
-st.markdown('---')
-st.markdown('Dashboard created for tracking POGG1 transactions in Colorado state government.')
+# --- Calculate Button ---
+if st.button("CALCULATE"):
+    try:
+        base_num = float(base)
+        exp_num = float(exponent)
+        # If you want to call an API instead, uncomment below and set your API URL
+        # api_url = "YOUR PowerOfMathAPI Invoke URL"
+        # response = requests.post(api_url, json={"base": base_num, "exponent": exp_num})
+        # result = response.json().get("body", "No result returned.")
+        result = base_num ** exp_num
+        st.success(f"{base_num} to the power of {exp_num} is {result}")
+    except ValueError:
+        st.error("Please enter valid numbers for both fields.")
